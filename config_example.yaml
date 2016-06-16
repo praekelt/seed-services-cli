@@ -1,0 +1,21 @@
+hub:
+  api_url: http://hub.example.org/api/v1
+  token: TEMP
+identity_store:
+  api_url: http://idstore.example.org/api/v1
+  token: TEMP2
+stage_based_messaging:
+  api_url: http://sbm.example.org/api/v1
+  token: TEMP3
+message_sender:
+  api_url: http://msg.example.org/api/v1
+  token: TEMP4
+scheduler:
+  api_url: http://scheduler.example.org/api/v1
+  token: TEMP5
+service_rating:
+  api_url: http://rating.example.org/api/v1
+  token: TEMP6
+control_interface:
+  api_url: http://ci.example.org/api/v1
+  token: TEMP7
