@@ -1,5 +1,5 @@
 Seed Services command line interface
-==============================
+====================================
 
 A command line interface for `Seed Services`_ HTTP APIs.
 
@@ -20,8 +20,26 @@ Then run::
 and read the usage instructions.
 
 
-Finding identities
+Configuration
 ----------------
+
+The configuration can be passed in using a YAML file. An example is provided::
+
+  hub:
+    api_url: http://hub.example.org/api/v1
+    token: TEMP
+  identity_store:
+    api_url: http://idstore.example.org/api/v1
+    token: TEMP2
+
+Then run the following to use::
+
+  $ seed-services-cli --conf=config.yaml command-to-run
+
+
+
+Finding identities
+------------------
 
 Run::
 
