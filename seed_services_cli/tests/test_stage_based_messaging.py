@@ -32,3 +32,10 @@ class TestStageBasedMessagingCommands(TestCase):
         self.assertTrue(
             "List all messages"
             in result.output)
+
+    def test_messages_import_help(self):
+        result = self.runner.invoke(cli, ['sbm-messages-import', '--help'])
+        self.assertEqual(result.exit_code, 0)
+        self.assertTrue(
+            "Import to the Stage Based Messaging service."
+            in result.output)
