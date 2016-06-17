@@ -52,6 +52,33 @@ Example search::
   $ seed-services-cli identity-search --address_type msisdn --address +27001
 
 
+Messages Listing and Upload
+---------------------------
+
+Run::
+
+  $ seed-services-cli sbm-messagesets --help
+
+to learn about the messagesets available for uploading to.
+
+Run::
+
+  $ seed-services-cli sbm-messages-import --help
+
+to learn about the message upload instructions.
+
+Then to upload content create a CSV or JSON file ::
+
+  $ seed-services-cli sbm-messages-import --csv filename.csv
+
+Note: To upload binary content the file name should in the binary_content field
+and this will be uploaded for you.
+
+To retrieve messages run::
+
+  $ seed-services-cli sbm-messages --help
+
+
 Developing
 ----------------
 
