@@ -16,6 +16,12 @@ class TestCli(TestCase):
         self.assertTrue(
             "identity-search  Find an identity"
             in result.output)
+        self.assertTrue(
+            "sbm-schedules    List all schedules"
+            in result.output)
+        self.assertTrue(
+            "sbm-messagesets  List all messagesets"
+            in result.output)
 
     def test_version(self):
         runner = CliRunner()

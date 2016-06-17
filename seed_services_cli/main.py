@@ -31,3 +31,4 @@ def cli(ctx):
 
 cli.command('identity-search')(seed_services_cli.identity_store.search)
 cli.command('sbm-schedules')(seed_services_cli.stage_based_messaging.schedules)
+cli.command('sbm-messagesets')(seed_services_cli.stage_based_messaging.messagesets)  # noqa

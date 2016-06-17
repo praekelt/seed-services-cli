@@ -12,9 +12,16 @@ class TestStageBasedMessagingCommands(TestCase):
     def tearDown(self):
         pass
 
-    def test_identity_search_help(self):
+    def test_schedule_list_help(self):
         result = self.runner.invoke(cli, ['sbm-schedules', '--help'])
         self.assertEqual(result.exit_code, 0)
         self.assertTrue(
             "List all schedules"
+            in result.output)
+
+    def test_messageset_list_help(self):
+        result = self.runner.invoke(cli, ['sbm-messagesets', '--help'])
+        self.assertEqual(result.exit_code, 0)
+        self.assertTrue(
+            "List all messagesets"
             in result.output)
