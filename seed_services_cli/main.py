@@ -3,6 +3,7 @@ import click
 import click_config
 
 import seed_services_cli.identity_store
+import seed_services_cli.stage_based_messaging
 
 
 class config(object):
@@ -14,13 +15,19 @@ class config(object):
         api_url = 'http://id.example.org/api/v1'
         token = 'REPLACEME'
 
+    class stage_based_messaging(object):
+        api_url = 'http://sbm.example.org/api/v1'
+        token = 'REPLACEME'
+
 
 @click.group(name="seed-services-cli")
 @click.version_option()
-@click_config.wrap(module=config, sections=('hub', 'identity_store'))
+@click_config.wrap(module=config, sections=('hub', 'identity_store',
+                   'stage_based_messaging'))
 @click.pass_context
 def cli(ctx):
     """ Seed Services command line utility. """
     ctx.obj = config
 
 cli.command('identity-search')(seed_services_cli.identity_store.search)
+cli.command('sbm-schedules')(seed_services_cli.stage_based_messaging.schedules)
