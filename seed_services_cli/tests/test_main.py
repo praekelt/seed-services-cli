@@ -22,6 +22,9 @@ class TestCli(TestCase):
         self.assertTrue(
             "sbm-messagesets  List all messagesets"
             in result.output)
+        self.assertTrue(
+            "sbm-messages     List all messages"
+            in result.output)
 
     def test_version(self):
         runner = CliRunner()

@@ -25,3 +25,10 @@ class TestStageBasedMessagingCommands(TestCase):
         self.assertTrue(
             "List all messagesets"
             in result.output)
+
+    def test_message_list_help(self):
+        result = self.runner.invoke(cli, ['sbm-messages', '--help'])
+        self.assertEqual(result.exit_code, 0)
+        self.assertTrue(
+            "List all messages"
+            in result.output)
