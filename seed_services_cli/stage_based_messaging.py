@@ -1,4 +1,6 @@
 import click
+import csv
+import json
 
 from client import StageBasedMessagingApiClient
 
@@ -94,3 +96,80 @@ def messages(ctx, csv, json, messageset, lang, seqno):
                    result["sequence_number"],
                    result["lang"], result["text_content"],
                    result["binary_content"]))
+
+
+@click.option(
+    '--csv', type=click.File('rb'),
+    help=('CSV file with columns for the endpoint'))
+@click.option(
+    '--json', type=click.File('rb'),
+    help=('JSON objects, one per line for the endpoint'))
+@click.pass_context
+def messages_import(ctx, csv, json):
+    """ Import to the Stage Based Messaging service.
+        binary_content fields should refer to filename in the current folder
+    """
+    if not any((csv, json)):
+        raise click.UsageError("Please specify either --csv or --json.")
+    api = get_api_client(ctx.obj.stage_based_messaging.api_url,
+                         ctx.obj.stage_based_messaging.token)
+    if csv:
+        for msg in messages_from_csv(csv):
+            if msg["binary_content"] is not None and \
+                    msg["binary_content"] != "":
+                msg = create_binarycontent(api, msg)
+            click.echo("Importing message to messageset %(messageset)s." % msg)
+            api.create_message(msg)
+    if json:
+        for msg in messages_from_json(json):
+            if msg["binary_content"] is not None and \
+                    msg["binary_content"] != "":
+                msg = create_binarycontent(api, msg)
+            click.echo("Importing message to messageset %(messageset)s." % msg)
+            api.create_message(msg)
+
+
+def create_binarycontent(api, msg):
+    """ Create a binary content item and set the forign key to new ID
+    """
+    click.echo("Uploading binary file %(binary_content)s." % msg)
+    files = {'content': click.open_file(msg["binary_content"])}
+    binary_content = api.create_binarycontent(files)
+    # update the ref to a forign key now
+    msg["binary_content"] = binary_content["id"]
+    return msg
+
+
+def messages_from_csv(csv_file):
+    reader = csv.DictReader(csv_file)
+    if not (set(["messageset", "sequence_number", "lang", "text_content",
+            "binary_content"]) <= set(reader.fieldnames)):
+        raise click.UsageError(
+            "CSV file must contain messageset, sequence_number, lang,"
+            " text_content, binary_content column headers.")
+    for data in reader:
+        yield {
+            "messageset": data["messageset"],
+            "sequence_number": data["sequence_number"],
+            "lang": data["lang"],
+            "text_content": data.get("text_content"),
+            "binary_content": data.get("binary_content")
+        }
+
+
+def messages_from_json(json_file):
+    for line in json_file:
+        data = json.loads(line.rstrip("\n"))
+        if not isinstance(data, dict) or not (
+                set(["messageset", "sequence_number", "lang", "text_content",
+                     "binary_content"]) <= set(data.keys())):
+            raise click.UsageError(
+                "JSON file lines must be objects containing messageset,"
+                "sequence_number, lang, text_content, binary_content keys.")
+        yield {
+            "messageset": data["messageset"],
+            "sequence_number": data["sequence_number"],
+            "lang": data["lang"],
+            "text_content": data.get("text_content"),
+            "binary_content": data.get("binary_content")
+        }

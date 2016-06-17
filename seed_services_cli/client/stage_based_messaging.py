@@ -1,5 +1,5 @@
-from demands import JSONServiceClient
-
+from demands import JSONServiceClient, HTTPServiceClient
+import requests
 
 class StageBasedMessagingApiClient(object):
     """
@@ -14,12 +14,16 @@ class StageBasedMessagingApiClient(object):
 
     """
 
-    def __init__(self, auth_token, api_url, session=None):
-        headers = {'Authorization': 'Token ' + auth_token}
+    def __init__(self, auth_token, api_url, session=None, session_http=None):
         if session is None:
-            session = JSONServiceClient(url=api_url,
-                                        headers=headers)
+            session = JSONServiceClient(
+                url=api_url, headers={'Authorization': 'Token ' + auth_token})
+
+        if session_http is None:
+            session_http = HTTPServiceClient(
+                url=api_url, headers={'Authorization': 'Token ' + auth_token})
         self.session = session
+        self.session_http = session_http
 
     def get_schedules(self, params=None):
         return self.session.get('/schedule/', params=params)
@@ -29,3 +33,9 @@ class StageBasedMessagingApiClient(object):
 
     def get_messages(self, params=None):
         return self.session.get('/message/', params=params)
+
+    def create_message(self, message):
+        return self.session.post('/message/', data=message)
+
+    def create_binarycontent(self, content):
+        return self.session_http.post('/binarycontent/', files=content).json()
