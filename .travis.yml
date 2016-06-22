@@ -8,3 +8,11 @@ install:
 script:
   - "flake8 seed_services_cli"
   - "py.test seed_services_cli"
+deploy:
+  provider: pypi
+  user: Praekelt
+  password:
+    secure: "ThUNTdgI6hSWJmb9qoHUqvJ6X57vitSFSxluAMk5C9FhYnZupHh25/2H2vA4qhPt91Vy8IzBfVvoKFL+5K6IxodaCZSRWSmzeTxZcGwNEt3c9n/1TjEvL+ow/MYNCZasOWKqW7+m+RjtEGCg/OQEreNt6g/oJvH/oxaUCI4tZS9w5CTF6cMg12dogI+24QjsknkQHPDRhaJhO5aGklF03T9W2fQfdAmDrMqzo3r4sdC6yvWu3HBRbGAx7o04FLz0U+5ZgY5GeQl5zJ3U76sl7VAhzr5Bk4rhI0wnL60+x8DHmCQzj48ndEPMAlgnGDFYGbv9BTP3zAkYGwXMzuCetjz4b2Aaj/jgcehzv1o2szFWYY2RNORkvX2t13ZWB96n/1byhGW6+kQ1lnoTkSQ/hmDuP5SnNoRvqEE3JyRGg7ifPYPs92lXiKtT3B4C0ijAK7QxGjloOwD2mHF7BwZVBWmi3ZJmzVBW3qGTFhmX2jlljts7cJ+iFQP7k9H37eF+5WKBlKijTa9H+lHqr0HSMXdT67+mJmeBPmn2xy22LZeDQ2/8chFvW9iC2qBBOP4GnSZgEIDGzfN3610JOv1A45J7lL7HstWQy4eHnXq9nWGswTxb8mfwlts+y8uwBnMFBZXWPG0MKJ2unbLcZ+2SLFbnxDxAUwQt26Bp/9kP8t0="
+  on:
+    tags: true
+    all_branches: true
