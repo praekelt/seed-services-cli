@@ -1,5 +1,5 @@
 from demands import JSONServiceClient, HTTPServiceClient
-import requests
+
 
 class StageBasedMessagingApiClient(object):
     """

@@ -3,7 +3,7 @@
 from unittest import TestCase
 from click.testing import CliRunner
 from seed_services_cli.main import cli
-# import responses
+import responses
 
 
 class TestSendCommand(TestCase):
@@ -36,39 +36,40 @@ class TestSendCommand(TestCase):
             in result.output)
 
     # Can not get this to work
-    # @responses.activate
-    # def test_identity_search(self):
-    #     # setup
-    #     search_response = {
-    #         "count": 1,
-    #         "next": None,
-    #         "previous": None,
-    #         "results": [
-    #             {
-    #                 "id": "0c03d360-1180-4fb4-9eed-ecd2cff8fa05",
-    #                 "version": 1,
-    #                 "details": {
-    #                     "default_addr_type": "msisdn",
-    #                     "addresses": {
-    #                       "msisdn": {
-    #                           "+27123": {}
-    #                       }
-    #                     }
-    #                 }
-    #             }
-    #         ]
-    #     }
-    #     responses.add(responses.GET,
-    #                   "http://id.example.org/api/v1/identities/search/?details__addresses__msisdn=%2B27001",  # noqa
-    #                   json=search_response, status=200)
-    #     # Execute
-    #     result = self.invoke_identity_search([])
-    #     # Check
-    #     self.assertEqual(result.exit_code, 0)
-    #     self.assertTrue("Looking for msisdn of +27001." in result.output)
-    #     self.assertTrue("Found 1 results:" in result.output)
-    #     self.assertTrue("0c03d360-1180-4fb4-9eed-ecd2cff8fa05"
-    #                     in result.output)
-    #     self.assertEqual(len(responses.calls), 1)
-    #     self.assertEqual(responses.calls[0].request.url,
-    #                     "http://id.example.org/api/v1/identities/search/?details__addresses__msisdn=%2B27001")  # noqa
+    @responses.activate
+    def test_identity_search(self):
+        # setup
+        search_response = {
+            "count": 1,
+            "next": None,
+            "previous": None,
+            "results": [
+                {
+                    "id": "0c03d360-1180-4fb4-9eed-ecd2cff8fa05",
+                    "version": 1,
+                    "details": {
+                        "default_addr_type": "msisdn",
+                        "addresses": {
+                          "msisdn": {
+                              "+27123": {}
+                          }
+                        }
+                    }
+                }
+            ]
+        }
+        responses.add(responses.GET,
+                      "http://id.example.org/api/v1/identities/search/?details__addresses__msisdn=%2B27001",  # noqa
+                      json=search_response, status=200,
+                      match_querystring=True)
+        # Execute
+        result = self.invoke_identity_search([])
+        # Check
+        self.assertEqual(result.exit_code, 0)
+        self.assertTrue("Looking for msisdn of +27001." in result.output)
+        self.assertTrue("Found 1 results:" in result.output)
+        self.assertTrue("0c03d360-1180-4fb4-9eed-ecd2cff8fa05"
+                        in result.output)
+        self.assertEqual(len(responses.calls), 1)
+        self.assertEqual(responses.calls[0].request.url,
+                        "http://id.example.org/api/v1/identities/search/?details__addresses__msisdn=%2B27001")  # noqa
