@@ -33,6 +33,13 @@ class TestStageBasedMessagingCommands(TestCase):
             "List all messages"
             in result.output)
 
+    def test_message_delete_help(self):
+        result = self.runner.invoke(cli, ['sbm-messages-delete', '--help'])
+        self.assertEqual(result.exit_code, 0)
+        self.assertTrue(
+            "Delete all messages matching filter"
+            in result.output)
+
     def test_messages_import_help(self):
         result = self.runner.invoke(cli, ['sbm-messages-import', '--help'])
         self.assertEqual(result.exit_code, 0)
