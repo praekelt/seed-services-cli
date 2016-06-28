@@ -33,4 +33,5 @@ cli.command('identity-search')(seed_services_cli.identity_store.search)
 cli.command('sbm-schedules')(seed_services_cli.stage_based_messaging.schedules)
 cli.command('sbm-messagesets')(seed_services_cli.stage_based_messaging.messagesets)  # noqa
 cli.command('sbm-messages')(seed_services_cli.stage_based_messaging.messages)
+cli.command('sbm-messages-delete')(seed_services_cli.stage_based_messaging.messages_delete)  # noqa
 cli.command('sbm-messages-import')(seed_services_cli.stage_based_messaging.messages_import)  # noqa

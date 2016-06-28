@@ -1,5 +1,5 @@
 from demands import JSONServiceClient, HTTPServiceClient
-import requests
+
 
 class StageBasedMessagingApiClient(object):
     """
@@ -34,8 +34,17 @@ class StageBasedMessagingApiClient(object):
     def get_messages(self, params=None):
         return self.session.get('/message/', params=params)
 
+    def get_message(self, message_id):
+        return self.session.get('/message/%s/' % message_id)
+
     def create_message(self, message):
         return self.session.post('/message/', data=message)
+
+    def delete_message(self, message_id):
+        return self.session.delete('/message/%s/' % message_id)
+
+    def delete_binarycontent(self, binarycontent_id):
+        return self.session.delete('/binarycontent/%s/' % binarycontent_id)
 
     def create_binarycontent(self, content):
         return self.session_http.post('/binarycontent/', files=content).json()

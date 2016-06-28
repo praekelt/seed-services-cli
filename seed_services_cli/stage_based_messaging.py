@@ -3,6 +3,7 @@ import csv
 import json
 
 from client import StageBasedMessagingApiClient
+from demands import HTTPServiceError
 
 
 def get_api_client(url, token):
@@ -68,26 +69,38 @@ def messagesets(ctx, csv, json):
     '--json', type=click.File('wb+'),
     help=('Export messages to the named file as new-line separated'
           ' JSON objects. NOT SUPPORTED.'))
-@click.option('--messageset', '-m', type=click.INT,
+@click.option('--message', '-m', type=click.INT,
+              help='Filter by Message')
+@click.option('--messageset', '-ms', type=click.INT,
               help='Filter by Messageset')
 @click.option('--lang', '-l', type=click.STRING, help='Filter by language')
 @click.option('--seqno', '-s', type=click.INT,
               help='Filter by sequence number')
 @click.pass_context
-def messages(ctx, csv, json, messageset, lang, seqno):
+def messages(ctx, csv, json, message, messageset, lang, seqno):
     """ List all messages
     """
     api = get_api_client(ctx.obj.stage_based_messaging.api_url,
                          ctx.obj.stage_based_messaging.token)
     click.echo("Getting messages")
     params = {}
-    if messageset:
-        params["messageset"] = messageset
-    if lang:
-        params["lang"] = lang
-    if seqno:
-        params["sequence_number"] = seqno
-    results = api.get_messages(params=params)
+    if message:
+        # get a very particular message
+        try:
+            result = api.get_message(message_id=message)
+            results = {"count": 1, "results": [result]}
+        except HTTPServiceError:
+            click.echo("Message not found")
+            ctx.abort()
+    else:
+        # use the filters
+        if messageset:
+            params["messageset"] = messageset
+        if lang:
+            params["lang"] = lang
+        if seqno:
+            params["sequence_number"] = seqno
+        results = api.get_messages(params=params)
     click.echo("Found %s results (id, messageset, sequence_number, lang,"
                " text_content, binary_content):" % results["count"])
     for result in results["results"]:
@@ -96,6 +109,49 @@ def messages(ctx, csv, json, messageset, lang, seqno):
                    result["sequence_number"],
                    result["lang"], result["text_content"],
                    result["binary_content"]))
+
+
+@click.option('--message', '-m', type=click.INT,
+              help='Filter by Message')
+@click.option('--messageset', '-ms', type=click.INT,
+              help='Filter by Messageset')
+@click.option('--lang', '-l', type=click.STRING, help='Filter by language')
+@click.option('--seqno', '-s', type=click.INT,
+              help='Filter by sequence number')
+@click.confirmation_option(help='Are you sure you want to drop the messages?')
+@click.pass_context
+def messages_delete(ctx, message, messageset, lang, seqno):
+    """ Delete all messages matching filter
+    """
+    api = get_api_client(ctx.obj.stage_based_messaging.api_url,
+                         ctx.obj.stage_based_messaging.token)
+    click.echo("Getting messages to delete")
+    params = {}
+    if message:
+        # get a very particular message
+        try:
+            result = api.get_message(message_id=message)
+            results = {"count": 1, "results": [result]}
+        except HTTPServiceError:
+            click.echo("Message not found")
+            ctx.abort()
+    else:
+        # use the filters
+        if messageset:
+            params["messageset"] = messageset
+        if lang:
+            params["lang"] = lang
+        if seqno:
+            params["sequence_number"] = seqno
+        results = api.get_messages(params=params)
+    click.echo("Found %s result(s)" % results["count"])
+    for result in results["results"]:
+        if result["binary_content"]:
+            api.delete_binarycontent(binarycontent_id=result["binary_content"])
+            click.echo("Deleted binary file <%s>" % result["binary_content"])
+            click.echo("Deleted message <%s>" % result["id"])
+        else:
+            api.delete_message(message_id=result["id"])
 
 
 @click.option(
