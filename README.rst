@@ -120,4 +120,5 @@ Release Notes
 -------------
 0.0.2 - 28-June-2016 - Added `sbm-messages-delete`. Renamed short param from `m` to `ms` for
 messageset for `sbm-messages` command for consistency.
-0.0.1 - Initial release  
+
+0.0.1 - Initial release
