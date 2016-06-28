@@ -78,6 +78,23 @@ To retrieve messages run::
 
   $ seed-services-cli sbm-messages --help
 
+Filters are available for message, messageset, lang and sequence_number.
+
+
+Message Deletion
+----------------
+
+Run::
+
+  $ seed-services-cli sbm-messages-delete --help
+
+to learn about deleting messages. Filters are available for message,
+messageset, lang and sequence_number.
+
+Example that would purge all messages and binary files for messageset 1::
+
+  $ seed-services-cli sbm-messages-delete --messageset 1
+
 
 Developing
 ----------------
@@ -98,3 +115,9 @@ Reporting issues
 
 Issues can be filed in the GitHub issue tracker. Please don't use the issue
 tracker for general support queries.
+
+Release Notes
+-------------
+0.0.2 - 28-June-2016 - Added `sbm-messages-delete`. Renamed short param from `m` to `ms` for 
+messageset for `sbm-messages` command for consistency.
+0.0.1 - Initial release
