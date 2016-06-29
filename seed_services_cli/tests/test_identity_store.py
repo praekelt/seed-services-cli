@@ -124,3 +124,10 @@ class TestSendCommand(TestCase):
         self.assertEqual(len(responses.calls), 1)
         self.assertEqual(responses.calls[0].request.url,
                         "http://id.example.org/api/v1/identities/0c03d360-1180-4fb4-9eed-ecd2cff8fa05/")  # noqa
+
+    def test_identity_import_get_help(self):
+        result = self.runner.invoke(cli, ['identity-import', '--help'])
+        self.assertEqual(result.exit_code, 0)
+        self.assertTrue(
+            "Import to the Identity Store service."
+            in result.output)

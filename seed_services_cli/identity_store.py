@@ -1,5 +1,6 @@
 import click
 import json
+import csv
 
 from client import IdentityStoreApiClient
 from demands import HTTPServiceError
@@ -55,3 +56,53 @@ def get_identity(ctx, identity):
         raise click.UsageError(
             "Please specify identity UUID. See --help.")
     click.echo(json.dumps(result))
+
+
+@click.option(
+    '--csv', type=click.File('rb'),
+    help=('CSV file with columns for the endpoint'))
+@click.option(
+    '--json', type=click.File('rb'),
+    help=('JSON objects, one per line for the endpoint'))
+@click.pass_context
+def identities_import(ctx, csv, json):
+    """ Import to the Identity Store service.
+    """
+    if not any((csv, json)):
+        raise click.UsageError("Please specify either --csv or --json.")
+    api = get_api_client(ctx.obj.identity_store.api_url,
+                         ctx.obj.identity_store.token)
+    if csv:
+        for identity in identities_from_csv(csv):
+            api.create_identity(identity)
+    if json:
+        for identity in identities_from_json(json):
+            api.create_identity(identity)
+    click.echo("Completed importing identities.")
+
+
+def identities_from_csv(csv_file):
+    reader = csv.DictReader(csv_file)
+    for data in reader:
+        identity = {
+            "communicate_through": data["communicate_through"],
+            "details": {
+                "addresses": {
+                    data["address_type"]: data["address"]
+                },
+                "default_addr_type": data["address_type"]
+            }
+        }
+        for key, value in data.iteritems():
+            if key not in ("address_type", "address", "communicate_through"):
+                identity["details"][key] = value
+        yield identity
+
+
+def identities_from_json(json_file):
+    for line in json_file:
+        data = json.loads(line.rstrip("\n"))
+        if not isinstance(data, dict):
+            raise click.UsageError(
+                "JSON file lines must be objects.")
+        yield data

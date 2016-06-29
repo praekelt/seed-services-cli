@@ -27,6 +27,9 @@ class IdentityStoreApiClient(object):
     def get_identity(self, identity_id):
         return self.session.get('/identities/%s/' % identity_id)
 
+    def create_identity(self, identity):
+        return self.session.post('/identities/', data=identity)
+
     def get_identity_by_address(self, address_type, address_value):
         params = {"details__addresses__%s" % address_type: address_value}
         return self.session.get('/identities/search/', params=params)

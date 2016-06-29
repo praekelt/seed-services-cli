@@ -62,6 +62,22 @@ Run::
 to get a specific identity details dump to json
 
 
+Identities Upload
+---------------------------
+
+Run::
+
+  $ seed-services-cli identity-import --help
+
+to learn about the identity upload instructions.
+
+Then to upload content create a CSV or JSON file ::
+
+  $ seed-services-cli identity-import --csv filename.csv
+
+Find demo_import_identities.csv and .json in the repo route for format example.
+
+
 Messages Listing and Upload
 ---------------------------
 
@@ -128,7 +144,7 @@ tracker for general support queries.
 
 Release Notes
 -------------
-0.0.3 - 29-June-2016 - Added `identity-get`. 
+0.0.3 - 29-June-2016 - Added `identity-get`.
 
 0.0.2 - 28-June-2016 - Added `sbm-messages-delete`. Renamed short param from `m` to `ms` for
 messageset for `sbm-messages` command for consistency.
