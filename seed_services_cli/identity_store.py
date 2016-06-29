@@ -1,6 +1,8 @@
 import click
+import json
 
 from client import IdentityStoreApiClient
+from demands import HTTPServiceError
 
 
 def get_api_client(url, token):
@@ -31,3 +33,25 @@ def search(ctx, address_type, address):
     if results["count"] > 0:
         for result in results["results"]:
             click.echo(result["id"])
+
+
+@click.option(
+    '--identity', '-i',
+    help='Identity UUID')
+@click.pass_context
+def get_identity(ctx, identity):
+    """ Find a specific identity
+    """
+    api = get_api_client(ctx.obj.identity_store.api_url,
+                         ctx.obj.identity_store.token)
+    if identity:
+        # get a very particular identity
+        try:
+            result = api.get_identity(identity_id=identity)
+        except HTTPServiceError:
+            click.echo("Identity not found")
+            ctx.abort()
+    else:
+        raise click.UsageError(
+            "Please specify identity UUID. See --help.")
+    click.echo(json.dumps(result))

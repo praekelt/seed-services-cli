@@ -17,6 +17,9 @@ class TestCli(TestCase):
             "identity-search      Find an identity"
             in result.output)
         self.assertTrue(
+            "identity-get         Find a specific identity"
+            in result.output)
+        self.assertTrue(
             "sbm-schedules        List all schedules"
             in result.output)
         self.assertTrue(
