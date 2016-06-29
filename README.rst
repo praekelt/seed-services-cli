@@ -144,7 +144,7 @@ tracker for general support queries.
 
 Release Notes
 -------------
-0.0.3 - 29-June-2016 - Added `identity-get`.
+0.0.3 - 29-June-2016 - Added `identity-get` and `identity-import`.
 
 0.0.2 - 28-June-2016 - Added `sbm-messages-delete`. Renamed short param from `m` to `ms` for
 messageset for `sbm-messages` command for consistency.
