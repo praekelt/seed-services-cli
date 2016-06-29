@@ -1,0 +1,2 @@
+mother_id,stage,receiver_id,operator_id,language,msg_type,gravida,last_period_date,msg_receiver
+uuid,prebirth,uuid,uuid,eng_NG,text,1,20150202,mother_only

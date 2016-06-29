@@ -4,6 +4,7 @@ import click_config
 
 import seed_services_cli.identity_store
 import seed_services_cli.stage_based_messaging
+import seed_services_cli.hub
 
 
 class config(object):
@@ -37,3 +38,4 @@ cli.command('sbm-messagesets')(seed_services_cli.stage_based_messaging.messagese
 cli.command('sbm-messages')(seed_services_cli.stage_based_messaging.messages)
 cli.command('sbm-messages-delete')(seed_services_cli.stage_based_messaging.messages_delete)  # noqa
 cli.command('sbm-messages-import')(seed_services_cli.stage_based_messaging.messages_import)  # noqa
+cli.command('hub-registrations-import')(seed_services_cli.hub.registrations_import)  # noqa
