@@ -122,6 +122,22 @@ Example that would purge all messages and binary files for messageset 1::
   $ seed-services-cli sbm-messages-delete --messageset 1
 
 
+Registration Upload to Hub
+---------------------------
+
+Run::
+
+  $ seed-services-cli hub-registrations-import --help
+
+to learn about the registration upload instructions.
+
+Then to upload content create a CSV or JSON file ::
+
+  $ seed-services-cli hub-registrations-import --csv filename.csv
+
+Find demo_import_registration.csv in the repo route for format example.
+
+
 Developing
 ----------------
 
@@ -144,6 +160,8 @@ tracker for general support queries.
 
 Release Notes
 -------------
+0.0.4 - 29-June-2016 - Added `hub-registrations-import`
+
 0.0.3 - 29-June-2016 - Added `identity-get` and `identity-import`.
 
 0.0.2 - 28-June-2016 - Added `sbm-messages-delete`. Renamed short param from `m` to `ms` for
