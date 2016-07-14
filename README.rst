@@ -160,6 +160,8 @@ tracker for general support queries.
 
 Release Notes
 -------------
+0.0.5 - 14-July-2016 - Bugfix `identity-import` for malformed addresses
+
 0.0.4 - 29-June-2016 - Added `hub-registrations-import`
 
 0.0.3 - 29-June-2016 - Added `identity-get` and `identity-import`.
