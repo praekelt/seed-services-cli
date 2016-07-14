@@ -90,7 +90,9 @@ def identities_from_csv(csv_file):
             "communicate_through": data["communicate_through"],
             "details": {
                 "addresses": {
-                    data["address_type"]: data["address"]
+                    data["address_type"]: {
+                        data["address"]: {}
+                    }
                 },
                 "default_addr_type": data["address_type"]
             }
