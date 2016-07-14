@@ -74,10 +74,12 @@ def identities_import(ctx, csv, json):
                          ctx.obj.identity_store.token)
     if csv:
         for identity in identities_from_csv(csv):
-            api.create_identity(identity)
+            result = api.create_identity(identity)
+            click.echo(result["id"])
     if json:
         for identity in identities_from_json(json):
-            api.create_identity(identity)
+            result = api.create_identity(identity)
+            click.echo(result["id"])
     click.echo("Completed importing identities.")
 
 
