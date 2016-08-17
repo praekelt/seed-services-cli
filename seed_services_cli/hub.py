@@ -2,7 +2,7 @@ import click
 import json
 import csv
 
-from client import HubApiClient
+from seed_services_client.hub import HubApiClient
 
 
 def get_api_client(url, token):

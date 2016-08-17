@@ -2,7 +2,7 @@ import click
 import csv
 import json
 
-from client import StageBasedMessagingApiClient
+from seed_services_client.stage_based_messaging import StageBasedMessagingApiClient  # noqa
 from demands import HTTPServiceError
 
 

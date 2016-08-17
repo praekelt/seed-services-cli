@@ -14,7 +14,8 @@ setup(
     install_requires=[
         'demands==3.0.0',
         'click',
-        'click-config'
+        'click-config',
+        'seed-services-client'
     ],
     entry_points="""
         [console_scripts]
