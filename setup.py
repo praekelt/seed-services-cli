@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="seed-services-cli",
-    version="0.0.5",
+    version="0.0.6",
     url='http://github.com/praekelt/seed-services-cli',
     license='BSD',
     description="A command-line interface for Seed Services HTTP APIs",
@@ -14,7 +14,8 @@ setup(
     install_requires=[
         'demands==3.0.0',
         'click',
-        'click-config'
+        'click-config',
+        'seed-services-client'
     ],
     entry_points="""
         [console_scripts]

@@ -138,6 +138,39 @@ Then to upload content create a CSV or JSON file ::
 Find demo_import_registration.csv in the repo route for format example.
 
 
+Adding Users to Auth with Team access
+-------------------------------------
+
+Run::
+
+  $ seed-services-cli auth-user-add --help
+
+to learn about adding users. Then add to a team.
+
+Run::
+
+  $ seed-services-cli auth-user-add-team --help
+
+
+Checking Service status
+-----------------------
+
+Run::
+
+  $ seed-services-cli ci-status
+
+to get full service status uptime information.
+
+
+Generate User Tokens
+--------------------
+Run::
+
+  $ seed-services-cli ci-user-token-generate --help
+
+to understand how to ensure Users have correct CI tokens for services.
+
+
 Developing
 ----------------
 
@@ -160,6 +193,8 @@ tracker for general support queries.
 
 Release Notes
 -------------
+0.0.6 - 17-August-2016 - Added auth and ci related commands
+
 0.0.5 - 14-July-2016 - Bugfix `identity-import` for malformed addresses
 
 0.0.4 - 29-June-2016 - Added `hub-registrations-import`

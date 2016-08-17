@@ -2,7 +2,7 @@ import click
 import json
 import csv
 
-from client import IdentityStoreApiClient
+from seed_services_client.identity_store import IdentityStoreApiClient
 from demands import HTTPServiceError
 
 
@@ -48,7 +48,7 @@ def get_identity(ctx, identity):
     if identity:
         # get a very particular identity
         try:
-            result = api.get_identity(identity_id=identity)
+            result = api.get_identity(identity=identity)
         except HTTPServiceError:
             click.echo("Identity not found")
             ctx.abort()
