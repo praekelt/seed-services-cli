@@ -16,6 +16,10 @@ scheduler:
 service_rating:
   api_url: http://rating.example.org/api/v1
   token: TEMP6
-control_interface:
+ci:
   api_url: http://ci.example.org/api/v1
   token: TEMP7
+auth:
+  email: temp8@example.org
+  password: TEMP8
+  api_url: http://ci.example.org
