@@ -14,10 +14,10 @@ def get_api_client(url, token):
 
 
 @click.option(
-    '--csv', type=click.File('wb+'),
+    '--csv', type=click.File('w+'),
     help=('Export schedules to the named file in CSV format. NOT SUPPORTED.'))
 @click.option(
-    '--json', type=click.File('wb+'),
+    '--json', type=click.File('w+'),
     help=('Export schedules to the named file as new-line separated'
           ' JSON objects. NOT SUPPORTED.'))
 @click.pass_context
