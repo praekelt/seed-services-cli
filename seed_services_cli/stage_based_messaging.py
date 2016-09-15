@@ -14,10 +14,10 @@ def get_api_client(url, token):
 
 
 @click.option(
-    '--csv', type=click.File('w+'),
+    '--csv', type=click.File('wb+'),
     help=('Export schedules to the named file in CSV format. NOT SUPPORTED.'))
 @click.option(
-    '--json', type=click.File('w+'),
+    '--json', type=click.File('wb+'),
     help=('Export schedules to the named file as new-line separated'
           ' JSON objects. NOT SUPPORTED.'))
 @click.pass_context
@@ -155,10 +155,10 @@ def messages_delete(ctx, message, messageset, lang, seqno):
 
 
 @click.option(
-    '--csv', type=click.File('rb'),
+    '--csv', type=click.File('r'),
     help=('CSV file with columns for the endpoint'))
 @click.option(
-    '--json', type=click.File('rb'),
+    '--json', type=click.File('r'),
     help=('JSON objects, one per line for the endpoint'))
 @click.pass_context
 def messages_import(ctx, csv, json):
