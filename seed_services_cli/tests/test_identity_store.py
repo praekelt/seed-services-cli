@@ -57,7 +57,7 @@ class TestSendCommand(TestCase):
                         "default_addr_type": "msisdn",
                         "addresses": {
                           "msisdn": {
-                              "+27123": {}
+                              "+27001": {}
                           }
                         }
                     }
