@@ -1,9 +1,16 @@
 import click
 import csv
 import json
+import sys
 
 from seed_services_client.stage_based_messaging import StageBasedMessagingApiClient  # noqa
 from demands import HTTPServiceError
+
+
+if sys.version_info.major == 2:
+    file_open_mode = 'rb'
+else:
+    file_open_mode = 'r'
 
 
 def get_api_client(url, token):
@@ -132,10 +139,10 @@ def messages_delete(ctx, message, messageset, lang, seqno):
 
 
 @click.option(
-    '--csv', type=click.File('rb'),
+    '--csv', type=click.File(file_open_mode),
     help=('CSV file with columns for the endpoint'))
 @click.option(
-    '--json', type=click.File('rb'),
+    '--json', type=click.File(file_open_mode),
     help=('JSON objects, one per line for the endpoint'))
 @click.pass_context
 def messages_import(ctx, csv, json):
