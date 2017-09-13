@@ -13,15 +13,8 @@ def get_api_client(url, token):
     )
 
 
-@click.option(
-    '--csv', type=click.File('wb+'),
-    help=('Export schedules to the named file in CSV format. NOT SUPPORTED.'))
-@click.option(
-    '--json', type=click.File('wb+'),
-    help=('Export schedules to the named file as new-line separated'
-          ' JSON objects. NOT SUPPORTED.'))
 @click.pass_context
-def schedules(ctx, csv, json):
+def schedules(ctx):
     """ List all schedules
     """
     api = get_api_client(ctx.obj.stage_based_messaging.api_url,
@@ -36,16 +29,8 @@ def schedules(ctx, csv, json):
                    result["month_of_year"]))
 
 
-@click.option(
-    '--csv', type=click.File('wb+'),
-    help=('Export messagesets to the named file in CSV format.'
-          ' NOT SUPPORTED.'))
-@click.option(
-    '--json', type=click.File('wb+'),
-    help=('Export messagesets to the named file as new-line separated'
-          ' JSON objects. NOT SUPPORTED.'))
 @click.pass_context
-def messagesets(ctx, csv, json):
+def messagesets(ctx):
     """ List all messagesets
     """
     api = get_api_client(ctx.obj.stage_based_messaging.api_url,
@@ -61,14 +46,6 @@ def messagesets(ctx, csv, json):
                    result["notes"]))
 
 
-@click.option(
-    '--csv', type=click.File('wb+'),
-    help=('Export messages to the named file in CSV format.'
-          ' NOT SUPPORTED.'))
-@click.option(
-    '--json', type=click.File('wb+'),
-    help=('Export messages to the named file as new-line separated'
-          ' JSON objects. NOT SUPPORTED.'))
 @click.option('--message', '-m', type=click.INT,
               help='Filter by Message')
 @click.option('--messageset', '-ms', type=click.INT,
@@ -77,7 +54,7 @@ def messagesets(ctx, csv, json):
 @click.option('--seqno', '-s', type=click.INT,
               help='Filter by sequence number')
 @click.pass_context
-def messages(ctx, csv, json, message, messageset, lang, seqno):
+def messages(ctx, message, messageset, lang, seqno):
     """ List all messages
     """
     api = get_api_client(ctx.obj.stage_based_messaging.api_url,
