@@ -46,7 +46,6 @@ class TestSendCommand(TestCase):
     def test_identity_search(self):
         # setup
         search_response = {
-            "count": 1,
             "next": None,
             "previous": None,
             "results": [

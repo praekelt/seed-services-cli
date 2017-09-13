@@ -29,7 +29,7 @@ class TestSbmSchedules(TestStageBasedMessagingCommands):
 
     @patch('seed_services_client.StageBasedMessagingApiClient.get_schedules')
     def test_schedule_list(self, schedule_patch):
-        schedule_patch.return_value = {'count': 1, 'results': [{
+        schedule_patch.return_value = {'results': [{
             'id': '1',
             'minute': '2',
             'hour': '3',
@@ -54,7 +54,7 @@ class TestSbmMessagesets(TestStageBasedMessagingCommands):
 
     @patch('seed_services_client.StageBasedMessagingApiClient.get_messagesets')
     def test_messageset_list(self, messageset_patch):
-        messageset_patch.return_value = {'count': 1, 'results': [{
+        messageset_patch.return_value = {'results': [{
             'id': '1',
             'short_name': 'test_set',
             'content_type': 'text',
@@ -96,7 +96,7 @@ class TestSbmMessages(TestStageBasedMessagingCommands):
 
     @patch('seed_services_client.StageBasedMessagingApiClient.get_messages')
     def test_message_list_all_messages(self, messages_patch):
-        messages_patch.return_value = {'count': 2, 'results': [
+        messages_patch.return_value = {'results': [
             {
                 'id': '1',
                 'messageset': '2',

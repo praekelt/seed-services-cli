@@ -27,9 +27,9 @@ def schedules(ctx):
     api = get_api_client(ctx.obj.stage_based_messaging.api_url,
                          ctx.obj.stage_based_messaging.token)
     click.echo("Getting schedules")
-    results = api.get_schedules()
-    click.echo("Found %s results:" % results["count"])
-    for result in results["results"]:
+    results = list(api.get_schedules()['results'])
+    click.echo("Found %s results:" % len(results))
+    for result in results:
         click.echo("%s: %s %s %s %s %s (m/h/d/dM/MY)" % (
                    result["id"], result["minute"], result["hour"],
                    result["day_of_week"], result["day_of_month"],
@@ -43,10 +43,10 @@ def messagesets(ctx):
     api = get_api_client(ctx.obj.stage_based_messaging.api_url,
                          ctx.obj.stage_based_messaging.token)
     click.echo("Getting messagesets")
-    results = api.get_messagesets()
+    results = list(api.get_messagesets()['results'])
     click.echo("Found %s results (id, short_name, content_type, next_set,"
-               " default_schedule, notes):" % results["count"])
-    for result in results["results"]:
+               " default_schedule, notes):" % len(results))
+    for result in results:
         click.echo("%s,%s,%s,%s,%s,%s" % (
                    result["id"], result["short_name"], result["content_type"],
                    result["next_set"], result["default_schedule"],
@@ -71,8 +71,7 @@ def messages(ctx, message, messageset, lang, seqno):
     if message:
         # get a very particular message
         try:
-            result = api.get_message(message_id=message)
-            results = {"count": 1, "results": [result]}
+            results = [api.get_message(message_id=message)]
         except HTTPServiceError:
             click.echo("Message not found")
             ctx.abort()
@@ -84,10 +83,10 @@ def messages(ctx, message, messageset, lang, seqno):
             params["lang"] = lang
         if seqno:
             params["sequence_number"] = seqno
-        results = api.get_messages(params=params)
+        results = list(api.get_messages(params=params)['results'])
     click.echo("Found %s results (id, messageset, sequence_number, lang,"
-               " text_content, binary_content):" % results["count"])
-    for result in results["results"]:
+               " text_content, binary_content):" % len(results))
+    for result in results:
         click.echo("%s,%s,%s,%s,\"%s\",%s" % (
                    result["id"], result["messageset"],
                    result["sequence_number"],
@@ -114,8 +113,7 @@ def messages_delete(ctx, message, messageset, lang, seqno):
     if message:
         # get a very particular message
         try:
-            result = api.get_message(message_id=message)
-            results = {"count": 1, "results": [result]}
+            results = [api.get_message(message_id=message)]
         except HTTPServiceError:
             click.echo("Message not found")
             ctx.abort()
@@ -127,9 +125,9 @@ def messages_delete(ctx, message, messageset, lang, seqno):
             params["lang"] = lang
         if seqno:
             params["sequence_number"] = seqno
-        results = api.get_messages(params=params)
-    click.echo("Found %s result(s)" % results["count"])
-    for result in results["results"]:
+        results = list(api.get_messages(params=params)['results'])
+    click.echo("Found %s result(s)" % len(results))
+    for result in results:
         if result["binary_content"]:
             api.delete_binarycontent(binarycontent_id=result["binary_content"])
             click.echo("Deleted binary file <%s>" % result["binary_content"])

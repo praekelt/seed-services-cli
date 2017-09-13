@@ -16,15 +16,13 @@ def status(ctx):
     """
     api = get_api_client(ctx.obj.ci.api_url, ctx.obj.ci.token)
     click.echo("Getting all service status")
-    result = api.get_services()
-    if result["count"] > 0:
-        for service in result["results"]:
-            if service["up"]:
-                status = "up"
-            else:
-                status = "down"
-            click.echo("Service %s is %s. Last check: %s" % (service["name"],
-                       status, service["updated_at"]))
+    for service in api.get_services()['results']:
+        if service["up"]:
+            status = "up"
+        else:
+            status = "down"
+        click.echo("Service %s is %s. Last check: %s" % (service["name"],
+                   status, service["updated_at"]))
 
 
 @click.option(
