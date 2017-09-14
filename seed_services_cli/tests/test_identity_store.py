@@ -46,7 +46,6 @@ class TestSendCommand(TestCase):
     def test_identity_search(self):
         # setup
         search_response = {
-            "count": 1,
             "next": None,
             "previous": None,
             "results": [
@@ -57,7 +56,7 @@ class TestSendCommand(TestCase):
                         "default_addr_type": "msisdn",
                         "addresses": {
                           "msisdn": {
-                              "+27123": {}
+                              "+27001": {}
                           }
                         }
                     }

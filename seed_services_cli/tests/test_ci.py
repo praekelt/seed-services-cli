@@ -70,7 +70,6 @@ class TestSendCommand(TestCase):
     def test_get_service_status(self):
         # setup
         services_response = {
-            "count": 2,
             "next": None,
             "previous": None,
             "results": [

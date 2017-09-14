@@ -29,11 +29,11 @@ def search(ctx, address_type, address):
         raise click.UsageError(
             "Please specify address type and address. See --help.")
     click.echo("Looking for %s of %s." % (address_type, address))
-    results = api.get_identity_by_address(address_type, address)
-    click.echo("Found %s results:" % results["count"])
-    if results["count"] > 0:
-        for result in results["results"]:
-            click.echo(result["id"])
+    results = list(
+        api.get_identity_by_address(address_type, address)['results'])
+    click.echo("Found %s results:" % len(results))
+    for result in results:
+        click.echo(result["id"])
 
 
 @click.option(

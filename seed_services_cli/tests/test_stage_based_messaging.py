@@ -1,6 +1,12 @@
 """ Tests for seed_services_cli.stage_based_messaging """
 
+import tempfile
+
 from unittest import TestCase
+try:
+    from unittest.mock import patch
+except ImportError:
+    from mock import patch
 from click.testing import CliRunner
 from seed_services_cli.main import cli
 
@@ -12,6 +18,8 @@ class TestStageBasedMessagingCommands(TestCase):
     def tearDown(self):
         pass
 
+
+class TestSbmSchedules(TestStageBasedMessagingCommands):
     def test_schedule_list_help(self):
         result = self.runner.invoke(cli, ['sbm-schedules', '--help'])
         self.assertEqual(result.exit_code, 0)
@@ -19,6 +27,24 @@ class TestStageBasedMessagingCommands(TestCase):
             "List all schedules"
             in result.output)
 
+    @patch('seed_services_client.StageBasedMessagingApiClient.get_schedules')
+    def test_schedule_list(self, schedule_patch):
+        schedule_patch.return_value = {'results': [{
+            'id': '1',
+            'minute': '2',
+            'hour': '3',
+            'day_of_week': '4',
+            'day_of_month': '5',
+            'month_of_year': '6',
+        }]}
+
+        result = self.runner.invoke(cli, ['sbm-schedules'])
+        self.assertEqual(result.exit_code, 0)
+        self.assertTrue('Found 1 results' in result.output)
+        self.assertTrue('1: 2 3 4 5 6 (m/h/d/dM/MY)' in result.output)
+
+
+class TestSbmMessagesets(TestStageBasedMessagingCommands):
     def test_messageset_list_help(self):
         result = self.runner.invoke(cli, ['sbm-messagesets', '--help'])
         self.assertEqual(result.exit_code, 0)
@@ -26,6 +52,24 @@ class TestStageBasedMessagingCommands(TestCase):
             "List all messagesets"
             in result.output)
 
+    @patch('seed_services_client.StageBasedMessagingApiClient.get_messagesets')
+    def test_messageset_list(self, messageset_patch):
+        messageset_patch.return_value = {'results': [{
+            'id': '1',
+            'short_name': 'test_set',
+            'content_type': 'text',
+            'next_set': '4',
+            'default_schedule': '5',
+            'notes': 'good set',
+        }]}
+
+        result = self.runner.invoke(cli, ['sbm-messagesets'])
+        self.assertEqual(result.exit_code, 0)
+        self.assertTrue('Found 1 results' in result.output)
+        self.assertTrue('1,test_set,text,4,5,good set' in result.output)
+
+
+class TestSbmMessages(TestStageBasedMessagingCommands):
     def test_message_list_help(self):
         result = self.runner.invoke(cli, ['sbm-messages', '--help'])
         self.assertEqual(result.exit_code, 0)
@@ -33,6 +77,51 @@ class TestStageBasedMessagingCommands(TestCase):
             "List all messages"
             in result.output)
 
+    @patch('seed_services_client.StageBasedMessagingApiClient.get_message')
+    def test_message_list_specific_message(self, message_patch):
+        message_patch.return_value = {
+            'id': '1',
+            'messageset': '2',
+            'sequence_number': '3',
+            'lang': 'eng_ZA',
+            'text_content': 'test message',
+            'binary_content': 'binary',
+        }
+
+        result = self.runner.invoke(cli, ['sbm-messages', '--message=1'])
+        self.assertEqual(result.exit_code, 0)
+        message_patch.assert_called_with(message_id=1)
+        self.assertTrue('Found 1 results' in result.output)
+        self.assertTrue('1,2,3,eng_ZA,"test message",binary' in result.output)
+
+    @patch('seed_services_client.StageBasedMessagingApiClient.get_messages')
+    def test_message_list_all_messages(self, messages_patch):
+        messages_patch.return_value = {'results': [
+            {
+                'id': '1',
+                'messageset': '2',
+                'sequence_number': '3',
+                'lang': 'eng_ZA',
+                'text_content': 'test message',
+                'binary_content': 'binary',
+            }, {
+                'id': '2',
+                'messageset': '2',
+                'sequence_number': '3',
+                'lang': 'eng_ZA',
+                'text_content': 'test msg two',
+                'binary_content': 'binary',
+            }
+        ]}
+
+        result = self.runner.invoke(cli, ['sbm-messages'])
+        self.assertEqual(result.exit_code, 0)
+        self.assertTrue('Found 2 results' in result.output)
+        self.assertTrue('1,2,3,eng_ZA,"test message",binary' in result.output)
+        self.assertTrue('2,2,3,eng_ZA,"test msg two",binary' in result.output)
+
+
+class TestSbmMessagesDelete(TestStageBasedMessagingCommands):
     def test_message_delete_help(self):
         result = self.runner.invoke(cli, ['sbm-messages-delete', '--help'])
         self.assertEqual(result.exit_code, 0)
@@ -40,9 +129,49 @@ class TestStageBasedMessagingCommands(TestCase):
             "Delete all messages matching filter"
             in result.output)
 
+    @patch('seed_services_client.StageBasedMessagingApiClient.delete_message')
+    @patch('seed_services_client.StageBasedMessagingApiClient.get_message')
+    def test_message_delete(self, get_patch, delete_patch):
+        get_patch.return_value = {'id': 1, 'binary_content': False}
+
+        result = self.runner.invoke(
+            cli, ['sbm-messages-delete', '--yes', '--message=1'])
+        self.assertEqual(result.exit_code, 0)
+        delete_patch.assert_called_with(message_id=1)
+        self.assertTrue('Found 1 result(s)' in result.output)
+
+
+class TestSbmMessagesImport(TestStageBasedMessagingCommands):
     def test_messages_import_help(self):
         result = self.runner.invoke(cli, ['sbm-messages-import', '--help'])
         self.assertEqual(result.exit_code, 0)
         self.assertTrue(
             "Import to the Stage Based Messaging service."
             in result.output)
+
+    def test_message_import_error_with_no_param(self):
+        result = self.runner.invoke(cli, ['sbm-messages-import'])
+        self.assertEqual(result.exit_code, 2)
+        self.assertTrue(
+            'Please specify either --csv or --json.' in result.output)
+
+    @patch('seed_services_client.StageBasedMessagingApiClient.create_message')
+    def test_message_import_csv(self, create_patch):
+        csv_file = tempfile.NamedTemporaryFile()
+        csv_file.write(
+            b'messageset,sequence_number,lang,text_content,binary_content\n')
+        csv_file.write(b'1,2,eng_ZA,"message text",""')
+        csv_file.flush()
+
+        result = self.runner.invoke(
+            cli, ['sbm-messages-import', '--csv={0}'.format(csv_file.name)])
+        csv_file.close()
+
+        self.assertEqual(result.exit_code, 0)
+        create_patch.assert_called_with({
+            'lang': 'eng_ZA',
+            'text_content': 'message text',
+            'messageset': '1',
+            'sequence_number': '2',
+            'binary_content': '',
+        })
