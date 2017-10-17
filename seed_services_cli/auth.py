@@ -63,6 +63,7 @@ def user_change_password(ctx, email, password):
                          ctx.obj.auth.password,
                          ctx.obj.auth.api_url
                          )
+    click.echo('{}'.format(api))
     if not all((email, password)):
         raise click.UsageError(
             "Please specify both the email and new password. See --help.")
@@ -70,9 +71,9 @@ def user_change_password(ctx, email, password):
 
     users = api.get_users()
     user = None
-    for user in users:
-        if user.get('email') == email:
-            user = user
+    for u in users:
+        if u.get('email') == email:
+            user = u
             break
     if user is None:
         raise click.UsageError(
