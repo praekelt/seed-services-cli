@@ -50,6 +50,40 @@ def user_add(ctx, email, password, first_name, last_name, admin):
 
 
 @click.option(
+    '--email', '-e',
+    help='Email address')
+@click.option(
+    '--password', '-p',
+    help='Password')
+@click.pass_context
+def user_change_password(ctx, email, password):
+    """Change a user's password
+    """
+    api = get_api_client(ctx.obj.auth.email,
+                         ctx.obj.auth.password,
+                         ctx.obj.auth.api_url
+                         )
+    if not all((email, password)):
+        raise click.UsageError(
+            "Please specify both the email and new password. See --help.")
+    click.echo("Changing password for %s" % (email,))
+
+    users = api.get_users()
+    user = None
+    for user in users:
+        if user.get('email') == email:
+            user = user
+            break
+    if user is None:
+        raise click.UsageError(
+            "No user found for email {}".format(email))
+
+    user['password'] = password
+    result = api.update_user(user['id'], user)
+    click.echo("Updated user. {}".format(result))
+
+
+@click.option(
     '--user', '-u',
     help='User ID')
 @click.option(
