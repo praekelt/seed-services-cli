@@ -4,6 +4,7 @@ from unittest import TestCase
 from click.testing import CliRunner
 from seed_services_cli.main import cli
 import responses
+import json
 
 
 class TestSendCommand(TestCase):
@@ -22,6 +23,13 @@ class TestSendCommand(TestCase):
             'auth-user-add',
             '--first_name', first_name,
             '--last_name', last_name,
+            '--email', email,
+            '--password', password,
+        ] + args)
+
+    def invoke_user_change_password(self, args, email, password):
+        return self.runner.invoke(cli, [
+            'auth-user-change-password',
             '--email', email,
             '--password', password,
         ] + args)
@@ -124,6 +132,39 @@ class TestSendCommand(TestCase):
         self.assertEqual(len(responses.calls), 2)
         self.assertEqual(responses.calls[1].request.url,
                          "http://auth.example.org/users/")
+
+    @responses.activate
+    def test_user_change_password(self):
+        login_response = {
+            "token": "3e6de6f2cace86d3ac22d0a58e652f4b283ab58c"
+        }
+        responses.add(responses.POST,
+                      "http://auth.example.org/user/tokens/",
+                      json=login_response, status=201)
+
+        users_response = [{
+            'email': 'test@example.org',
+            }, {
+            'id': 2,
+            'email': 'test2@example.org'
+            }]
+        responses.add(responses.GET,
+                      "http://auth.example.org/users/",
+                      json=users_response, status=200)
+
+        responses.add(responses.PUT,
+                      "http://auth.example.org/users/2/",
+                      json={}, status=200)
+
+        result = self.invoke_user_change_password(
+            [], email='test2@example.org', password='testpass')
+        self.assertEqual(result.exit_code, 0)
+        self.assertTrue(
+            'Changing password for test2@example.org' in result.output)
+        self.assertEqual(len(responses.calls), 3)
+        self.assertEqual(
+            json.loads(responses.calls[2].request.body)['password'],
+            'testpass')
 
     def test_user_add_team_help(self):
         result = self.runner.invoke(cli, ['auth-user-add-team', '--help'])

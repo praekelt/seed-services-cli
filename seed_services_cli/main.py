@@ -52,5 +52,6 @@ cli.command('sbm-messages-import')(seed_services_cli.stage_based_messaging.messa
 cli.command('hub-registrations-import')(seed_services_cli.hub.registrations_import)  # noqa
 cli.command('auth-user-add')(seed_services_cli.auth.user_add)  # noqa
 cli.command('auth-user-add-team')(seed_services_cli.auth.user_add_team)  # noqa
+cli.command('auth-user-change-password')(seed_services_cli.auth.user_change_password)  # noqa
 cli.command('ci-status')(seed_services_cli.ci.status)  # noqa
 cli.command('ci-user-token-generate')(seed_services_cli.ci.user_tokens_generate)  # noqa
