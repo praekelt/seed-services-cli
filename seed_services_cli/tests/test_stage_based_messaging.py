@@ -12,6 +12,7 @@ from seed_services_cli.main import cli
 
 
 class TestStageBasedMessagingCommands(TestCase):
+
     def setUp(self):
         self.runner = CliRunner()
 
@@ -20,6 +21,7 @@ class TestStageBasedMessagingCommands(TestCase):
 
 
 class TestSbmSchedules(TestStageBasedMessagingCommands):
+
     def test_schedule_list_help(self):
         result = self.runner.invoke(cli, ['sbm-schedules', '--help'])
         self.assertEqual(result.exit_code, 0)
@@ -45,6 +47,7 @@ class TestSbmSchedules(TestStageBasedMessagingCommands):
 
 
 class TestSbmMessagesets(TestStageBasedMessagingCommands):
+
     def test_messageset_list_help(self):
         result = self.runner.invoke(cli, ['sbm-messagesets', '--help'])
         self.assertEqual(result.exit_code, 0)
@@ -70,6 +73,7 @@ class TestSbmMessagesets(TestStageBasedMessagingCommands):
 
 
 class TestSbmMessages(TestStageBasedMessagingCommands):
+
     def test_message_list_help(self):
         result = self.runner.invoke(cli, ['sbm-messages', '--help'])
         self.assertEqual(result.exit_code, 0)
@@ -122,6 +126,7 @@ class TestSbmMessages(TestStageBasedMessagingCommands):
 
 
 class TestSbmMessagesDelete(TestStageBasedMessagingCommands):
+
     def test_message_delete_help(self):
         result = self.runner.invoke(cli, ['sbm-messages-delete', '--help'])
         self.assertEqual(result.exit_code, 0)
@@ -142,6 +147,7 @@ class TestSbmMessagesDelete(TestStageBasedMessagingCommands):
 
 
 class TestSbmMessagesImport(TestStageBasedMessagingCommands):
+
     def test_messages_import_help(self):
         result = self.runner.invoke(cli, ['sbm-messages-import', '--help'])
         self.assertEqual(result.exit_code, 0)
@@ -165,6 +171,43 @@ class TestSbmMessagesImport(TestStageBasedMessagingCommands):
 
         result = self.runner.invoke(
             cli, ['sbm-messages-import', '--csv={0}'.format(csv_file.name)])
+        csv_file.close()
+
+        self.assertEqual(result.exit_code, 0)
+        create_patch.assert_called_with({
+            'lang': 'eng_ZA',
+            'text_content': 'message text',
+            'messageset': '1',
+            'sequence_number': '2',
+            'binary_content': '',
+        })
+
+
+class TestSbmMessagesUpdate(TestStageBasedMessagingCommands):
+
+    def test_messages_update_help(self):
+        result = self.runner.invoke(cli, ['sbm-messages-update', '--help'])
+        self.assertEqual(result.exit_code, 0)
+        self.assertTrue(
+            "Update to the Stage Based Messaging service."
+            in result.output)
+
+    def test_message_update_error_with_no_param(self):
+        result = self.runner.invoke(cli, ['sbm-messages-update'])
+        self.assertEqual(result.exit_code, 2)
+        self.assertTrue(
+            'Please specify either --csv or --json.' in result.output)
+
+    @patch('seed_services_client.StageBasedMessagingApiClient.update_message')
+    def test_message_update_csv(self, create_patch):
+        csv_file = tempfile.NamedTemporaryFile()
+        csv_file.write(
+            b'messageset,sequence_number,lang,text_content,binary_content\n')
+        csv_file.write(b'1,2,eng_ZA,"message text",""')
+        csv_file.flush()
+
+        result = self.runner.invoke(
+            cli, ['sbm-messages-update', '--csv={0}'.format(csv_file.name)])
         csv_file.close()
 
         self.assertEqual(result.exit_code, 0)
