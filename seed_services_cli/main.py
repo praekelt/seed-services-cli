@@ -10,6 +10,7 @@ import seed_services_cli.ci
 
 
 class config(object):
+
     class hub(object):
         api_url = 'http://hub.fqdn/api/v1'
         token = 'REPLACEME'
@@ -35,7 +36,7 @@ class config(object):
 @click.group(name="seed-services-cli")
 @click.version_option()
 @click_config.wrap(module=config, sections=('hub', 'identity_store',
-                   'stage_based_messaging', 'auth', 'ci'))
+                                            'stage_based_messaging', 'auth', 'ci'))
 @click.pass_context
 def cli(ctx):
     """ Seed Services command line utility. """
@@ -49,6 +50,7 @@ cli.command('sbm-messagesets')(seed_services_cli.stage_based_messaging.messagese
 cli.command('sbm-messages')(seed_services_cli.stage_based_messaging.messages)
 cli.command('sbm-messages-delete')(seed_services_cli.stage_based_messaging.messages_delete)  # noqa
 cli.command('sbm-messages-import')(seed_services_cli.stage_based_messaging.messages_import)  # noqa
+cli.command('sbm-messages-update')(seed_services_cli.stage_based_messaging.messages_update)  # noqa
 cli.command('hub-registrations-import')(seed_services_cli.hub.registrations_import)  # noqa
 cli.command('auth-user-add')(seed_services_cli.auth.user_add)  # noqa
 cli.command('auth-user-add-team')(seed_services_cli.auth.user_add_team)  # noqa

@@ -167,6 +167,37 @@ def messages_import(ctx, csv, json):
             api.create_message(msg)
 
 
+@click.option(
+    '--csv', type=click.File(file_open_mode),
+    help=('CSV file with columns for the endpoint'))
+@click.option(
+    '--json', type=click.File(file_open_mode),
+    help=('JSON objects, one per line for the endpoint'))
+@click.pass_context
+def messages_update(ctx, csv, json):
+    """ Send message updates to the Stage Based Messaging service.
+        binary_content fields should refer to filename in the current folder
+    """
+    if not any((csv, json)):
+        raise click.UsageError("please specify either --csv or --json")
+    api = get_api_client(ctx.obj.stage_based_messaging.api_url,
+                         ctx.obj.stage_based_messaging.token)
+    if csv:
+        for msg in messages_from_csv(csv):
+            if msg["binary_content"] is not None and \
+                    msg["binary_content"] != "":
+                msg = create_binarycontent(api, msg)
+            click.echo("Updating message to messageset %(messageset)s." % msg)
+            api.update_message(msg)
+    if json:
+        for msg in messages_from_json(json):
+            if msg["binary_content"] is not None and \
+                    msg["binary_content"] != "":
+                msg = create_binarycontent(api, msg)
+            click.echo("Updating message to messageset %(messageset)s." % msg)
+            api.update_message(msg)
+
+
 def create_binarycontent(api, msg):
     """ Create a binary content item and set the forign key to new ID
     """
@@ -181,7 +212,7 @@ def create_binarycontent(api, msg):
 def messages_from_csv(csv_file):
     reader = csv.DictReader(csv_file)
     if not (set(["messageset", "sequence_number", "lang", "text_content",
-            "binary_content"]) <= set(reader.fieldnames)):
+                 "binary_content"]) <= set(reader.fieldnames)):
         raise click.UsageError(
             "CSV file must contain messageset, sequence_number, lang,"
             " text_content, binary_content column headers.")
