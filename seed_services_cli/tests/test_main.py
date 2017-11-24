@@ -8,6 +8,7 @@ from seed_services_cli.main import cli
 
 
 class TestCli(TestCase):
+
     def test_help(self):
         runner = CliRunner()
         result = runner.invoke(cli, ['--help'])
@@ -36,6 +37,9 @@ class TestCli(TestCase):
             in result.output)
         self.assertTrue(
             "sbm-messages-import        Import to the Stage Based Messaging service."  # noqa
+            in result.output)
+        self.assertTrue(
+            "sbm-messages-update        Update to the Stage Based Messaging service."  # noqa
             in result.output)
         self.assertTrue(
             "hub-registrations-import   Import registrations to the hub service."  # noqa
