@@ -194,7 +194,6 @@ class TestSbmMessagesUpdate(TestStageBasedMessagingCommands):
 
     def test_message_update_error_with_no_param(self):
         result = self.runner.invoke(cli, ['sbm-messages-update'])
-        print result.output
         self.assertEqual(result.exit_code, 2)
         self.assertTrue(
             'Please specify either --csv or --json.' in result.output)
