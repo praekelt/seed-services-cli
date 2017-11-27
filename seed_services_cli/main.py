@@ -36,7 +36,8 @@ class config(object):
 @click.group(name="seed-services-cli")
 @click.version_option()
 @click_config.wrap(module=config, sections=('hub', 'identity_store',
-                                            'stage_based_messaging', 'auth', 'cli'))
+                                            'stage_based_messaging', 'auth',
+                                            'ci'))
 @click.pass_context
 def cli(ctx):
     """ Seed Services command line utility. """
