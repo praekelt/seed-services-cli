@@ -175,11 +175,11 @@ def messages_import(ctx, csv, json):
     help=('JSON objects, one per line for the endpoint'))
 @click.pass_context
 def messages_update(ctx, csv, json):
-    """ Send message updates to the Stage Based Messaging service.
+    """ Update messages in the Stage Based Messaging service.
         binary_content fields should refer to filename in the current folder
     """
     if not any((csv, json)):
-        raise click.UsageError("please specify either --csv or --json")
+        raise click.UsageError("Please specify either --csv or --json.")
     api = get_api_client(ctx.obj.stage_based_messaging.api_url,
                          ctx.obj.stage_based_messaging.token)
     if csv:

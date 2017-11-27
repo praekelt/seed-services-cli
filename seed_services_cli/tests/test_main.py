@@ -12,6 +12,7 @@ class TestCli(TestCase):
     def test_help(self):
         runner = CliRunner()
         result = runner.invoke(cli, ['--help'])
+
         self.assertEqual(result.exit_code, 0)
         self.assertTrue("Seed Services command line utility." in result.output)
         self.assertTrue(
@@ -39,7 +40,7 @@ class TestCli(TestCase):
             "sbm-messages-import        Import to the Stage Based Messaging service."  # noqa
             in result.output)
         self.assertTrue(
-            "sbm-messages-update        Update to the Stage Based Messaging service."  # noqa
+            "sbm-messages-update        Update messages in the Stage Based Messaging..."  # noqa
             in result.output)
         self.assertTrue(
             "hub-registrations-import   Import registrations to the hub service."  # noqa
