@@ -183,14 +183,11 @@ def messages_update(ctx, csv, json):
     api = get_api_client(ctx.obj.stage_based_messaging.api_url,
                          ctx.obj.stage_based_messaging.token)
     if csv:
-        for msg in messages_from_csv(csv):
-            if msg["binary_content"] is not None and \
-                    msg["binary_content"] != "":
-                msg = create_binarycontent(api, msg)
-            click.echo("Updating message to messageset %(messageset)s." % msg)
-            api.update_message(msg)
-    if json:
-        for msg in messages_from_json(json):
+        msgs = messages_from_csv(csv)
+    elif json:
+        msgs = messages_from_json(json)
+    if msgs:
+        for msg in msgs:
             if msg["binary_content"] is not None and \
                     msg["binary_content"] != "":
                 msg = create_binarycontent(api, msg)
