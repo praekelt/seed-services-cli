@@ -183,25 +183,45 @@ def messages_update(ctx, csv, json):
     api = get_api_client(ctx.obj.stage_based_messaging.api_url,
                          ctx.obj.stage_based_messaging.token)
     if csv:
-        msgs = messages_from_csv(csv)
+        messages = messages_from_csv(csv)
     elif json:
-        msgs = messages_from_json(json)
-    if msgs:
-        for msg in msgs:
-            if msg["binary_content"] is not None and \
-                    msg["binary_content"] != "":
-                msg = create_binarycontent(api, msg)
-            click.echo("Updating message to messageset %(messageset)s." % msg)
-            api.update_message(msg)
+        messages = messages_from_json(json)
+    params = {}
+    for message in messages:
+        if message["messageset"]:
+            params["messageset"] = message["messageset"]
+        if message["lang"]:
+            params["lang"] = message["lang"]
+        if message["seqno"]:
+            params["sequence_number"] = message["seqno"]
+        results = list(api.get_messages(params=params)['results'])
+        number_of_results = len(results)
+        if number_of_results == 1:
+            message["id"] = results[0]["id"]
+        elif number_of_results < 1:
+            raise click.UsageError("Multiple messages with messageset: %s, language: %s, \
+            sequence number: %s found.") % \
+                (message["messageset"], message["lang"], message["seqno"])
+        elif number_of_results > 1:
+            raise click.UsageError("Message with messageset: %s, language: %s, \
+            sequence number: %s not found.") % \
+                (message["messageset"], message["lang"], message["seqno"])
+    for message in messages:
+        if message["binary_content"] is not None and \
+                message["binary_content"] != "":
+            message = create_binarycontent(api, message)
+        click.echo("Updating message to messageset %(messageset)s." %
+                   message)
+        api.update_message(message)
 
 
 def create_binarycontent(api, msg):
-    """ Create a binary content item and set the forign key to new ID
+    """ Create a binary content item and set the foreign key to new ID
     """
     click.echo("Uploading binary file %(binary_content)s." % msg)
     files = {'content': click.open_file(msg["binary_content"])}
     binary_content = api.create_binarycontent(files)
-    # update the ref to a forign key now
+    # update the ref to a foreign key now
     msg["binary_content"] = binary_content["id"]
     return msg
 
