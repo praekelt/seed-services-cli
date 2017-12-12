@@ -188,12 +188,9 @@ def messages_update(ctx, csv, json):
         messages = messages_from_json(json)
     params = {}
     for message in messages:
-        if message["messageset"]:
-            params["messageset"] = message["messageset"]
-        if message["lang"]:
-            params["lang"] = message["lang"]
-        if message["seqno"]:
-            params["sequence_number"] = message["seqno"]
+        params["messageset"] = message["messageset"]
+        params["lang"] = message["lang"]
+        params["sequence_number"] = message["seqno"]
         results = list(api.get_messages(params=params)['results'])
         number_of_results = len(results)
         if number_of_results == 1:
