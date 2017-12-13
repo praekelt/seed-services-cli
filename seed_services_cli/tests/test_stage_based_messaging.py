@@ -199,7 +199,20 @@ class TestSbmMessagesUpdate(TestStageBasedMessagingCommands):
             'Please specify either --csv or --json.' in result.output)
 
     @patch('seed_services_client.StageBasedMessagingApiClient.update_message')
-    def test_message_update_csv(self, create_patch):
+    @patch('seed_services_client.StageBasedMessagingApiClient.get_messages')
+    def test_message_update_csv(self, get_patch, update_patch):
+
+        get_patch.return_value = {'results': [
+            {
+                'id': 132,
+                'binary_content': False,
+                'lang': 'eng_ZA',
+                'text_content': 'message text',
+                'messageset': '1',
+                'sequence_number': '2'
+            }
+        ]}
+
         csv_file = tempfile.NamedTemporaryFile()
         csv_file.write(
             b'messageset,sequence_number,lang,text_content,binary_content\n')
@@ -211,10 +224,10 @@ class TestSbmMessagesUpdate(TestStageBasedMessagingCommands):
         csv_file.close()
 
         self.assertEqual(result.exit_code, 0)
-        create_patch.assert_called_with({
+        update_patch.assert_called_with(132, {
             'lang': 'eng_ZA',
             'text_content': 'message text',
             'messageset': '1',
             'sequence_number': '2',
-            'binary_content': '',
+            'binary_content': ''
         })
