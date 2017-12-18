@@ -195,17 +195,13 @@ def messages_update(ctx, csv, json):
         params["sequence_number"] = message["sequence_number"]
         results = list(api.get_messages(params=params)['results'])
 
-        number_of_results = len(results)
-        if number_of_results == 1:
+        number_of_messages = len(results)
+        if number_of_messages == 1:
             update_msgs[results[0]["id"]] = message
-        elif number_of_results < 1:
-            raise click.UsageError("Multiple messages with messageset: %s, language: %s, \
-            sequence number: %s found.") % \
-                (message["messageset"], message["lang"], message["sequence_number"])
-        elif number_of_results > 1:
-            raise click.UsageError("Message with messageset: %s, language: %s, \
-            sequence number: %s not found.") % \
-                (message["messageset"], message["lang"], message["sequence_number"])
+        elif number_of_messages > 1:
+            raise click.UsageError("Multiple messages found.")
+        elif number_of_messages < 1:
+            raise click.UsageError("Message not found.")
 
     for msg_id, message in update_msgs.items():
         if message["binary_content"] is not None and \

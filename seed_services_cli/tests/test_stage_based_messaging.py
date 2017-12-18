@@ -231,3 +231,63 @@ class TestSbmMessagesUpdate(TestStageBasedMessagingCommands):
             'sequence_number': '2',
             'binary_content': ''
         })
+
+    @patch('seed_services_client.StageBasedMessagingApiClient.update_message')
+    @patch('seed_services_client.StageBasedMessagingApiClient.get_messages')
+    def test_message_update_csv_no_messages(self, get_patch, update_patch):
+        """Test that result output is empty when no message is returned in a lookup.
+        """
+        get_patch.return_value = {'results': [
+            {
+            }
+        ]}
+
+        csv_file = tempfile.NamedTemporaryFile()
+        csv_file.write(
+            b'messageset,sequence_number,lang,text_content,binary_content\n')
+        csv_file.write(b'1,2,eng_ZA,"message text",""')
+        csv_file.flush()
+
+        result = self.runner.invoke(
+            cli, ['sbm-messages-update', '--csv={0}'.format(csv_file.name)])
+        csv_file.close()
+
+        self.assertEqual(result.exit_code, -1)
+        self.assertTrue(result.output == '')
+
+    @patch('seed_services_client.StageBasedMessagingApiClient.update_message')
+    @patch('seed_services_client.StageBasedMessagingApiClient.get_messages')
+    def test_message_update_csv_multiple_messages(self, get_patch,
+                                                  update_patch):
+        """Test that 'Multiple messages found' is raised when more than one message is returned in a lookup.
+        """
+        get_patch.return_value = {'results': [
+            {
+                'id': 137,
+                'binary_content': False,
+                'lang': 'eng_ZA',
+                'text_content': 'message text 137',
+                'messageset': '1',
+                'sequence_number': '2'
+            },
+            {
+                'id': 139,
+                'binary_content': False,
+                'lang': 'eng_ZA',
+                'text_content': 'message text 139',
+                'messageset': '1',
+                'sequence_number': '2'
+            }
+        ]}
+
+        csv_file = tempfile.NamedTemporaryFile()
+        csv_file.write(
+            b'messageset,sequence_number,lang,text_content,binary_content\n')
+        csv_file.write(b'1,2,eng_ZA,"message text",""')
+        csv_file.flush()
+
+        result = self.runner.invoke(
+            cli, ['sbm-messages-update', '--csv={0}'.format(csv_file.name)])
+        csv_file.close()
+
+        self.assertTrue('Error: Multiple messages found' in result.output)
