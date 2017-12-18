@@ -235,12 +235,9 @@ class TestSbmMessagesUpdate(TestStageBasedMessagingCommands):
     @patch('seed_services_client.StageBasedMessagingApiClient.update_message')
     @patch('seed_services_client.StageBasedMessagingApiClient.get_messages')
     def test_message_update_csv_no_messages(self, get_patch, update_patch):
-        """Test that result output is empty when no message is returned in a lookup.
+        """ Test that result output is empty when no message is returned in a lookup.
         """
-        get_patch.return_value = {'results': [
-            {
-            }
-        ]}
+        get_patch.return_value = {'results': []}
 
         csv_file = tempfile.NamedTemporaryFile()
         csv_file.write(
@@ -252,14 +249,15 @@ class TestSbmMessagesUpdate(TestStageBasedMessagingCommands):
             cli, ['sbm-messages-update', '--csv={0}'.format(csv_file.name)])
         csv_file.close()
 
-        self.assertEqual(result.exit_code, -1)
-        self.assertTrue(result.output == '')
+        self.assertEqual(result.exit_code, 2)
+        self.assertTrue('Error: Message not found.' in result.output)
 
     @patch('seed_services_client.StageBasedMessagingApiClient.update_message')
     @patch('seed_services_client.StageBasedMessagingApiClient.get_messages')
     def test_message_update_csv_multiple_messages(self, get_patch,
                                                   update_patch):
-        """Test that 'Multiple messages found' is raised when more than one message is returned in a lookup.
+        """ Test that 'Multiple messages found' is raised when more than one \
+            message is returned in a lookup.
         """
         get_patch.return_value = {'results': [
             {
@@ -290,4 +288,5 @@ class TestSbmMessagesUpdate(TestStageBasedMessagingCommands):
             cli, ['sbm-messages-update', '--csv={0}'.format(csv_file.name)])
         csv_file.close()
 
-        self.assertTrue('Error: Multiple messages found' in result.output)
+        self.assertEqual(result.exit_code, 2)
+        self.assertTrue('Error: Multiple messages found.' in result.output)
