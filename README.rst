@@ -11,7 +11,7 @@ Installation
 
 Install with::
 
-  $ pip install --user seed-services-cli
+  $ pip install --user seed-services-cli (--user option may not be necessary when running a virtual environment)
 
 Then run::
 

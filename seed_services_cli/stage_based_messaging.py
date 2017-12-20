@@ -167,13 +167,58 @@ def messages_import(ctx, csv, json):
             api.create_message(msg)
 
 
+@click.option(
+    '--csv', type=click.File(file_open_mode),
+    help=('CSV file with columns for the endpoint'))
+@click.option(
+    '--json', type=click.File(file_open_mode),
+    help=('JSON objects, one per line for the endpoint'))
+@click.pass_context
+def messages_update(ctx, csv, json):
+    """ Update messages in the Stage Based Messaging service.
+        binary_content fields should refer to filename in the current folder
+    """
+    if not any((csv, json)):
+        raise click.UsageError("Please specify either --csv or --json.")
+    api = get_api_client(ctx.obj.stage_based_messaging.api_url,
+                         ctx.obj.stage_based_messaging.token)
+    if csv:
+        messages = messages_from_csv(csv)
+    elif json:
+        messages = messages_from_json(json)
+
+    update_msgs = {}
+    for message in messages:
+        params = {}
+        params["messageset"] = message["messageset"]
+        params["lang"] = message["lang"]
+        params["sequence_number"] = message["sequence_number"]
+        results = list(api.get_messages(params=params)['results'])
+
+        number_of_messages = len(results)
+        if number_of_messages == 1:
+            update_msgs[results[0]["id"]] = message
+        elif number_of_messages > 1:
+            raise click.UsageError("Multiple messages found.")
+        elif number_of_messages < 1:
+            raise click.UsageError("Message not found.")
+
+    for msg_id, message in update_msgs.items():
+        if message["binary_content"] is not None and \
+                message["binary_content"] != "":
+            message = create_binarycontent(api, message)
+        click.echo("Updating message to messageset %(messageset)s." %
+                   message)
+        api.update_message(msg_id, message)
+
+
 def create_binarycontent(api, msg):
-    """ Create a binary content item and set the forign key to new ID
+    """ Create a binary content item and set the foreign key to new ID
     """
     click.echo("Uploading binary file %(binary_content)s." % msg)
     files = {'content': click.open_file(msg["binary_content"])}
     binary_content = api.create_binarycontent(files)
-    # update the ref to a forign key now
+    # update the ref to a foreign key now
     msg["binary_content"] = binary_content["id"]
     return msg
 
@@ -181,7 +226,7 @@ def create_binarycontent(api, msg):
 def messages_from_csv(csv_file):
     reader = csv.DictReader(csv_file)
     if not (set(["messageset", "sequence_number", "lang", "text_content",
-            "binary_content"]) <= set(reader.fieldnames)):
+                 "binary_content"]) <= set(reader.fieldnames)):
         raise click.UsageError(
             "CSV file must contain messageset, sequence_number, lang,"
             " text_content, binary_content column headers.")
