@@ -235,7 +235,8 @@ class TestSbmMessagesUpdate(TestStageBasedMessagingCommands):
     @patch('seed_services_client.StageBasedMessagingApiClient.update_message')
     @patch('seed_services_client.StageBasedMessagingApiClient.get_messages')
     def test_message_update_csv_no_messages(self, get_patch, update_patch):
-        """ Test that result output is empty when no message is returned in a lookup.
+        """ Test that result output contains 'Error: Message not found.' error
+            when no message is returned in a lookup.
         """
         get_patch.return_value = {'results': []}
 
@@ -256,8 +257,8 @@ class TestSbmMessagesUpdate(TestStageBasedMessagingCommands):
     @patch('seed_services_client.StageBasedMessagingApiClient.get_messages')
     def test_message_update_csv_multiple_messages(self, get_patch,
                                                   update_patch):
-        """ Test that 'Multiple messages found' is raised when more than one \
-            message is returned in a lookup.
+        """ Test that result output contains 'Multiple messages found.' error
+            when more than one message is returned in a lookup.
         """
         get_patch.return_value = {'results': [
             {
@@ -290,3 +291,39 @@ class TestSbmMessagesUpdate(TestStageBasedMessagingCommands):
 
         self.assertEqual(result.exit_code, 2)
         self.assertTrue('Error: Multiple messages found.' in result.output)
+
+    @patch('seed_services_client.StageBasedMessagingApiClient.update_message')
+    @patch('seed_services_client.StageBasedMessagingApiClient.get_messages')
+    def test_message_update_json(self, get_patch, update_patch):
+        """ Test that messages update command takes JSON as input.
+        """
+        get_patch.return_value = {'results': [
+            {
+                'id': 132,
+                'binary_content': False,
+                'lang': 'eng_ZA',
+                'text_content': 'message text',
+                'messageset': '1',
+                'sequence_number': '2'
+            }
+        ]}
+
+        json_file = tempfile.NamedTemporaryFile()
+        json_file.write(
+            b'{"binary_content": "", "lang": "eng_ZA", '
+            b'"text_content": "message text", "messageset": "1", '
+            b'"sequence_number": "2"}')
+        json_file.flush()
+
+        result = self.runner.invoke(
+            cli, ['sbm-messages-update', '--json={0}'.format(json_file.name)])
+        json_file.close()
+
+        self.assertEqual(result.exit_code, 0)
+        update_patch.assert_called_with(132, {
+            'lang': 'eng_ZA',
+            'text_content': 'message text',
+            'messageset': '1',
+            'sequence_number': '2',
+            'binary_content': ''
+        })
