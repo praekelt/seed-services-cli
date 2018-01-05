@@ -60,3 +60,9 @@ docs/_build/
 
 # Virtual Env
 /ve/
+
+# Ignore Excel files
+*.xlsx
+
+# Ignore CSV files
+*.csv
