@@ -199,9 +199,13 @@ def messages_update(ctx, csv, json):
         if number_of_messages == 1:
             update_msgs[results[0]["id"]] = message
         elif number_of_messages > 1:
-            raise click.UsageError("Multiple messages found.")
+            click.echo(
+                "Multiple messages found. Message={}".format(message))\
+                .replace('\n', ',\n')
         elif number_of_messages < 1:
-            raise click.UsageError("Message not found.")
+            click.echo(
+                "Message not found. Message params={}".format(params))\
+                .replace('\n', ',\n')
 
     for msg_id, message in update_msgs.items():
         if message["binary_content"] is not None and \
