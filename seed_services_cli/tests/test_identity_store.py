@@ -1,9 +1,15 @@
 """ Tests for seed_services_cli.identity_store """
+import responses
+import tempfile
 
 from unittest import TestCase
 from click.testing import CliRunner
 from seed_services_cli.main import cli
-import responses
+
+try:
+    from unittest.mock import patch
+except ImportError:
+    from mock import patch
 
 
 class TestSendCommand(TestCase):
@@ -130,3 +136,45 @@ class TestSendCommand(TestCase):
         self.assertTrue(
             "Import to the Identity Store service."
             in result.output)
+
+    def test_identity_details_update_get_help(self):
+        result = self.runner.invoke(cli, ['identity-details-update', '--help'])
+        self.assertEqual(result.exit_code, 0)
+        self.assertTrue("Update identities details fields." in result.output)
+
+    def test_identity_details_update_no_json(self):
+        result = self.runner.invoke(cli, ['identity-details-update'])
+        self.assertEqual(result.exit_code, 2)
+        self.assertTrue("Please specify --json_file." in result.output)
+
+    @patch('seed_services_client.IdentityStoreApiClient.update_identity')
+    @patch('seed_services_client.IdentityStoreApiClient.search_identities')
+    def test_identity_details_update(self, get_patch, update_patch):
+
+        json_file = tempfile.NamedTemporaryFile()
+        json_file.write(
+            b'{"state": [{"old": "wrong", "new": "correct"}]}')
+        json_file.flush()
+
+        get_patch.return_value = [
+            {
+                "id": "0c03d360-1180-4fb4-9eed-ecd2cff8fa05",
+                "version": 1,
+                "details": {
+                    "default_addr_type": "msisdn",
+                    "state": "wrong"
+                }
+            }
+        ]
+
+        result = self.runner.invoke(
+            cli, ['identity-details-update', '--json-file={0}'.format(
+                json_file.name)])
+        json_file.close()
+
+        update_patch.assert_called_with(
+            "0c03d360-1180-4fb4-9eed-ecd2cff8fa05",
+            details={"default_addr_type": "msisdn", "state": "correct"})
+
+        self.assertTrue(
+            "Completed updating identity details." in result.output)

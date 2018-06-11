@@ -1,0 +1,10 @@
+{
+    "state": [
+        {"old": "incOrrect_spEllings", "new": "Correct Spelling"},
+        {"old": "wroNg", "new": "Better"},
+    ],
+    "facility": [
+        {"old": "incOrrect_spEllings", "new": "Correct Spelling"},
+        {"old": "wroNg", "new": "Better"},
+    ]
+}

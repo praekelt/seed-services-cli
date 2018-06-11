@@ -77,6 +77,20 @@ Then to upload content create a CSV or JSON file ::
 
 Find demo_import_identities.csv and .json in the repo route for format example.
 
+Identities Details Update
+-------------------------
+
+Run::
+
+  $ seed-services-cli identity-details-update --help
+
+to learn about the identity details update instructions.
+
+Then to upload content create a JSON file ::
+
+  $ seed-services-cli identity-details-update --json-file filename.json
+
+Find demo_identities_details_update.json in the repo route for format example.
 
 Messages Listing and Upload
 ---------------------------
