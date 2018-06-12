@@ -130,18 +130,18 @@ def identities_details_update(ctx, json_file):
     api = get_api_client(ctx.obj.identity_store.api_url,
                          ctx.obj.identity_store.token)
 
-    update_data = json.loads(json_file.read().rstrip("\n"))
+    update_data = json.load(json_file)
 
     for key, patches in update_data.items():
 
         for patch in patches:
             identities = api.search_identities(
-                "details__".format(key), patch["old"])
+                "details__{}".format(key), patch["old"])
 
-            for identity in identities:
+            for identity in identities['results']:
                 identity["details"][key] = patch["new"]
 
                 api.update_identity(
-                    identity["id"], details=identity["details"])
+                    identity["id"], {"details": identity["details"]})
 
     click.echo("Completed updating identity details.")
