@@ -156,7 +156,7 @@ class TestSendCommand(TestCase):
             b'{"state": [{"old": "wrong", "new": "correct"}]}')
         json_file.flush()
 
-        get_patch.return_value = [
+        get_patch.return_value = {"results": [
             {
                 "id": "0c03d360-1180-4fb4-9eed-ecd2cff8fa05",
                 "version": 1,
@@ -165,7 +165,7 @@ class TestSendCommand(TestCase):
                     "state": "wrong"
                 }
             }
-        ]
+        ]}
 
         result = self.runner.invoke(
             cli, ['identity-details-update', '--json-file={0}'.format(
@@ -174,7 +174,7 @@ class TestSendCommand(TestCase):
 
         update_patch.assert_called_with(
             "0c03d360-1180-4fb4-9eed-ecd2cff8fa05",
-            details={"default_addr_type": "msisdn", "state": "correct"})
+            {"details": {"default_addr_type": "msisdn", "state": "correct"}})
 
         self.assertTrue(
             "Completed updating identity details." in result.output)
