@@ -80,6 +80,8 @@ Find demo_import_identities.csv and .json in the repo route for format example.
 Identities Details Update
 -------------------------
 
+This command is used to update the values inside the details JSON field.
+
 Run::
 
   $ seed-services-cli identity-details-update --help
