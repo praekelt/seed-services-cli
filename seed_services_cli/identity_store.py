@@ -1,9 +1,15 @@
 import click
 import json
 import csv
+import sys
 
 from seed_services_client.identity_store import IdentityStoreApiClient
 from demands import HTTPServiceError
+
+if sys.version_info.major == 2:
+    file_open_mode = 'rb'
+else:
+    file_open_mode = 'r'
 
 
 def get_api_client(url, token):
@@ -59,10 +65,10 @@ def get_identity(ctx, identity):
 
 
 @click.option(
-    '--csv', type=click.File('rb'),
+    '--csv', type=click.File(file_open_mode),
     help=('CSV file with columns for the endpoint'))
 @click.option(
-    '--json', type=click.File('rb'),
+    '--json', type=click.File(file_open_mode),
     help=('JSON objects, one per line for the endpoint'))
 @click.pass_context
 def identities_import(ctx, csv, json):
@@ -110,3 +116,32 @@ def identities_from_json(json_file):
             raise click.UsageError(
                 "JSON file lines must be objects.")
         yield data
+
+
+@click.option(
+    '--json-file', type=click.File(file_open_mode),
+    help=('JSON objects, details that will be updated'))
+@click.pass_context
+def identities_details_update(ctx, json_file):
+    """ Update identities details fields.
+    """
+    if not json_file:
+        raise click.UsageError("Please specify --json_file.")
+    api = get_api_client(ctx.obj.identity_store.api_url,
+                         ctx.obj.identity_store.token)
+
+    update_data = json.loads(json_file.read().rstrip("\n"))
+
+    for key, patches in update_data.items():
+
+        for patch in patches:
+            identities = api.search_identities(
+                "details__".format(key), patch["old"])
+
+            for identity in identities:
+                identity["details"][key] = patch["new"]
+
+                api.update_identity(
+                    identity["id"], details=identity["details"])
+
+    click.echo("Completed updating identity details.")
