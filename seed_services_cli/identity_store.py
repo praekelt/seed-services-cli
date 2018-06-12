@@ -132,9 +132,9 @@ def identities_details_update(ctx, json_file):
 
     update_data = json.loads(json_file.read().rstrip("\n"))
 
-    for key in update_data:
+    for key, patches in update_data.items():
 
-        for patch in update_data[key]:
+        for patch in patches:
             identities = api.search_identities(
                 "details__".format(key), patch["old"])
 
