@@ -165,8 +165,9 @@ class TestSbmMessagesImport(TestStageBasedMessagingCommands):
     def test_message_import_csv(self, create_patch):
         csv_file = tempfile.NamedTemporaryFile()
         csv_file.write(
-            b'messageset,sequence_number,lang,text_content,binary_content\n')
-        csv_file.write(b'1,2,eng_ZA,"message text",""')
+            b'messageset,sequence_number,lang,text_content,binary_content,'
+            b'metadata\n')
+        csv_file.write(b'1,2,eng_ZA,"message text","",{"test":"metadata"}')
         csv_file.flush()
 
         result = self.runner.invoke(
@@ -180,6 +181,7 @@ class TestSbmMessagesImport(TestStageBasedMessagingCommands):
             'messageset': '1',
             'sequence_number': '2',
             'binary_content': '',
+            'metadata': {"test": "metadata"},
         })
 
 
@@ -209,14 +211,16 @@ class TestSbmMessagesUpdate(TestStageBasedMessagingCommands):
                 'lang': 'eng_ZA',
                 'text_content': 'message text',
                 'messageset': '1',
-                'sequence_number': '2'
+                'sequence_number': '2',
+                'metadata': {},
             }
         ]}
 
         csv_file = tempfile.NamedTemporaryFile()
         csv_file.write(
-            b'messageset,sequence_number,lang,text_content,binary_content\n')
-        csv_file.write(b'1,2,eng_ZA,"message text",""')
+            b'messageset,sequence_number,lang,text_content,binary_content,'
+            b'metadata\n')
+        csv_file.write(b'1,2,eng_ZA,"message text","",{"test":"metadata"}')
         csv_file.flush()
 
         result = self.runner.invoke(
@@ -229,7 +233,8 @@ class TestSbmMessagesUpdate(TestStageBasedMessagingCommands):
             'text_content': 'message text',
             'messageset': '1',
             'sequence_number': '2',
-            'binary_content': ''
+            'binary_content': '',
+            'metadata': {"test": "metadata"},
         })
 
     @patch('seed_services_client.StageBasedMessagingApiClient.update_message')

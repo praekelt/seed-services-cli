@@ -12,7 +12,7 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     install_requires=[
-        'demands==3.0.0',
+        'demands',
         'click',
         'click-config',
         'seed-services-client==0.34.0'
