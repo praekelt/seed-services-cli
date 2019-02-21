@@ -12,10 +12,10 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     install_requires=[
-        'demands==3.0.0',
         'click',
         'click-config',
-        'seed-services-client==0.34.0'
+        'seed-services-client==0.37.0',
+        'demands==3.0.0',
     ],
     entry_points="""
         [console_scripts]

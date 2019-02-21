@@ -3,8 +3,8 @@ python:
   - "2.7"
   - "3.5"
 install:
-  - "pip install -r requirements.txt --use-wheel"
-  - "pip install -r requirements-dev.txt --use-wheel"
+  - "pip install -r requirements.txt"
+  - "pip install -r requirements-dev.txt"
   - "python setup.py install"
 script:
   - "flake8 seed_services_cli"

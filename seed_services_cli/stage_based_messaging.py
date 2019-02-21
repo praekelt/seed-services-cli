@@ -236,7 +236,8 @@ def messages_from_csv(csv_file):
             "sequence_number": data["sequence_number"],
             "lang": data["lang"],
             "text_content": data.get("text_content"),
-            "binary_content": data.get("binary_content")
+            "binary_content": data.get("binary_content"),
+            "metadata": json.loads(data.get("metadata", "{}")),
         }
 
 
