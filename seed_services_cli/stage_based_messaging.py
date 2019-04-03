@@ -92,7 +92,7 @@ def messages(ctx, message, messageset, lang, seqno):
             params["lang"] = lang
         if seqno:
             params["sequence_number"] = seqno
-        results = list(api.get_messages(params=params)['results'])
+        results = api.get_messages(params=params)['results']
 
     results = map(encode_metadata, results)
     output.writeheader()
