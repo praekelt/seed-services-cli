@@ -96,7 +96,6 @@ class TestSbmMessages(TestStageBasedMessagingCommands):
         result = self.runner.invoke(cli, ['sbm-messages', '--message=1'])
         self.assertEqual(result.exit_code, 0)
         message_patch.assert_called_with(message_id=1)
-        print(result.output)
         self.assertTrue(
             '1,2,3,eng_ZA,test message,binary,"{""foo"": ""bar""}"' in
             result.output
