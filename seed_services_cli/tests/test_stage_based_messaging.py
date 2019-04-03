@@ -90,13 +90,17 @@ class TestSbmMessages(TestStageBasedMessagingCommands):
             'lang': 'eng_ZA',
             'text_content': 'test message',
             'binary_content': 'binary',
+            'metadata': {'foo': 'bar'},
         }
 
         result = self.runner.invoke(cli, ['sbm-messages', '--message=1'])
         self.assertEqual(result.exit_code, 0)
         message_patch.assert_called_with(message_id=1)
-        self.assertTrue('Found 1 results' in result.output)
-        self.assertTrue('1,2,3,eng_ZA,"test message",binary' in result.output)
+        print(result.output)
+        self.assertTrue(
+            '1,2,3,eng_ZA,test message,binary,"{""foo"": ""bar""}"' in
+            result.output
+        )
 
     @patch('seed_services_client.StageBasedMessagingApiClient.get_messages')
     def test_message_list_all_messages(self, messages_patch):
@@ -108,6 +112,7 @@ class TestSbmMessages(TestStageBasedMessagingCommands):
                 'lang': 'eng_ZA',
                 'text_content': 'test message',
                 'binary_content': 'binary',
+                'metadata': {'foo': 'bar'},
             }, {
                 'id': '2',
                 'messageset': '2',
@@ -115,14 +120,20 @@ class TestSbmMessages(TestStageBasedMessagingCommands):
                 'lang': 'eng_ZA',
                 'text_content': 'test msg two',
                 'binary_content': 'binary',
+                'metadata': {'bar': 'foo'},
             }
         ]}
 
         result = self.runner.invoke(cli, ['sbm-messages'])
         self.assertEqual(result.exit_code, 0)
-        self.assertTrue('Found 2 results' in result.output)
-        self.assertTrue('1,2,3,eng_ZA,"test message",binary' in result.output)
-        self.assertTrue('2,2,3,eng_ZA,"test msg two",binary' in result.output)
+        self.assertTrue(
+            '1,2,3,eng_ZA,test message,binary,"{""foo"": ""bar""}"' in
+            result.output
+        )
+        self.assertTrue(
+            '2,2,3,eng_ZA,test msg two,binary,"{""bar"": ""foo""}"' in
+            result.output
+        )
 
 
 class TestSbmMessagesDelete(TestStageBasedMessagingCommands):

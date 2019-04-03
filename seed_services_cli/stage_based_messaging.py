@@ -53,6 +53,11 @@ def messagesets(ctx):
                    result["notes"]))
 
 
+def encode_metadata(message):
+    message["metadata"] = json.dumps(message["metadata"])
+    return message
+
+
 @click.option('--message', '-m', type=click.INT,
               help='Filter by Message')
 @click.option('--messageset', '-ms', type=click.INT,
@@ -64,9 +69,13 @@ def messagesets(ctx):
 def messages(ctx, message, messageset, lang, seqno):
     """ List all messages
     """
+    fieldnames = [
+        "id", "messageset", "sequence_number", "lang", "text_content",
+        "binary_content", "metadata"
+    ]
+    output = csv.DictWriter(sys.stdout, fieldnames, extrasaction="ignore")
     api = get_api_client(ctx.obj.stage_based_messaging.api_url,
                          ctx.obj.stage_based_messaging.token)
-    click.echo("Getting messages")
     params = {}
     if message:
         # get a very particular message
@@ -84,14 +93,10 @@ def messages(ctx, message, messageset, lang, seqno):
         if seqno:
             params["sequence_number"] = seqno
         results = list(api.get_messages(params=params)['results'])
-    click.echo("Found %s results (id, messageset, sequence_number, lang,"
-               " text_content, binary_content):" % len(results))
-    for result in results:
-        click.echo("%s,%s,%s,%s,\"%s\",%s" % (
-                   result["id"], result["messageset"],
-                   result["sequence_number"],
-                   result["lang"], result["text_content"],
-                   result["binary_content"]))
+
+    results = map(encode_metadata, results)
+    output.writeheader()
+    output.writerows(results)
 
 
 @click.option('--message', '-m', type=click.INT,
